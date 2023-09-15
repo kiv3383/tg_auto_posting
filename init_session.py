@@ -1,34 +1,27 @@
-import json
 import logging
-from python_socks.async_.asyncio import Proxy
-# import time
-
-# from telethon import sync, TelegramClient, events
-# from telethon import TelegramClient, connection
+import os
 from telethon import TelegramClient
+from config_data.config import AllSettings
 
-# from utils import *
+os.system('taskkill /IM telegram.exe /F')
+
+all_settings = AllSettings()
 
 formatter = logging.Formatter()
 logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
-
-with open('config.json', 'r') as f:
-    config = json.loads(f.read())
-
 logging.basicConfig(level=logging.WARNING)
 
-# accounts = config['accounts']
 folder_session = 'session/'
 
-api_id = int(config['api_id'])
-api_hash = config['api_hash']
-password = config['password']
-phone = config['accounts']
-proxy = config['proxy']
+api_id = all_settings.api_id
+api_hash = all_settings.api_hash
+password = all_settings.password
+phone_number = all_settings.phone_number
+proxy = all_settings.proxy
 
-client = TelegramClient(folder_session + phone, api_id, api_hash, proxy=proxy)
-client.start(password=password, phone=phone)
+client = TelegramClient(folder_session + phone_number, api_id, api_hash, proxy=proxy)
+client.start(password=password, phone=phone_number)
 if client.is_user_authorized():
     logging.info('Login success')
 
