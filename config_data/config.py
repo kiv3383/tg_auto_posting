@@ -12,7 +12,7 @@ class AllSettings:
     api_id = int(os.getenv('API_ID'))
     api_hash = os.getenv('API_HASH')
     phone_number = os.getenv('PHONE_NUMBER')
-    source_group = os.getenv('SOURCE_GROUP')
+    source_group = os.getenv('SOURCE_GROUP').split(', ')
     target_group = os.getenv('TARGET_GROUP')
     gasket_group = os.getenv('GASKET_GROUP')
     password = os.getenv('ACC_PASSWORD')
@@ -24,3 +24,4 @@ class AllSettings:
         'password': os.getenv('PROXY_PASSWORD'),
         'rdns': bool(os.getenv('RDNS'))
     }
+    bot_token = os.getenv('BOT_TOKEN')
