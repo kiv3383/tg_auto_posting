@@ -10,8 +10,8 @@ all_settings = AllSettings()
 
 formatter = logging.Formatter()
 logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
-logging.basicConfig(level=logging.DEBUG)
+                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
+logging.basicConfig(level=logging.WARNING)
 
 folder_session = 'session/'
 

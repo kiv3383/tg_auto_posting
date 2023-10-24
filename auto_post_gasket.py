@@ -5,15 +5,14 @@ import os
 from telethon.sync import TelegramClient
 from telethon import events
 
-# from auto_post_target_group import admin_target_group_id, target_group
 from config_data.config import AllSettings
 
 all_settings = AllSettings()
 
 formatter = logging.Formatter()
 logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
-logging.basicConfig(level=logging.DEBUG)
+                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
+logging.basicConfig(level=logging.WARNING)
 
 # os.system('taskkill /IM telegram.exe /F')
 
@@ -37,24 +36,15 @@ client = TelegramClient(
 @client.on(events.NewMessage(chats=source_group))
 async def message_handler(event):
     message = event.message
-    # file = message.media
-    # text = message.message
-    # print(message)
-    # print('file:', file)
-    # print('text:', text)
     if message.grouped_id:
         return
     await client.send_message(gasket_group, message)
-    # await bot.send_message(admin_target_group_id, message=text, file=file, buttons=Button.inline('ДА'))
 
 
 @client.on(events.Album(chats=source_group))
 async def album_handler(event):
     files = [f.media for f in event.messages]
     await client.send_message(gasket_group, event.messages[0].message, file=files)
-    print('send from source to gasket')
-    print('text:', event.messages[0].message)
-    print('files:', files)
 
 
 async def get_message_for_bot(group, ids):

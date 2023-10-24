@@ -12,8 +12,8 @@ all_settings = AllSettings()
 
 formatter = logging.Formatter()
 logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
-logging.basicConfig(level=logging.DEBUG)
+                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
+logging.basicConfig(level=logging.WARNING)
 
 # os.system('taskkill /IM telegram.exe /F')
 
@@ -44,12 +44,11 @@ async def handler(event):
     if message.grouped_id:
         return
     button = Button.inline("Post it")
-    await bot.send_message(admin_target_group_id, message.message, file=message.media, buttons=button)
+    await bot.send_message(admin_target_group_id, message.message, file=file, buttons=button)
 
 
 @bot.on(events.Album(chats=gasket_group))
 async def album_resend_handler(event):
-    # messages_id_list = ' '.join([mes.id for mes in event.messages])
     messages_id_list = ' '.join(map(str, [mes.id for mes in event.messages]))
     print('1. messages_id_list:', messages_id_list)
     button = Button.inline("Post it", data=messages_id_list)
@@ -73,7 +72,6 @@ async def handler(event):
         messages_id_list = list(map(int, event.data.decode('UTF-8').split()))
         messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
         message_text = ' '.join(map(lambda x: x.message, messages_from_album))
-        print(message_text)
         files = [message.media for message in messages_from_album]
         await send_album_message_to_target_channel(target_group, text=message_text,
                                                    file=files, silent=True)
