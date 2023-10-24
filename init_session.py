@@ -1,16 +1,17 @@
 import logging
-import os
+# import os
 from telethon import TelegramClient
+
 from config_data.config import AllSettings
 
-os.system('taskkill /IM telegram.exe /F')
+# os.system('taskkill /IM telegram.exe /F')
 
 all_settings = AllSettings()
 
 formatter = logging.Formatter()
 logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
-logging.basicConfig(level=logging.WARNING)
+                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 folder_session = 'session/'
 
@@ -20,8 +21,12 @@ password = all_settings.password
 phone_number = all_settings.phone_number
 proxy = all_settings.proxy
 
-client = TelegramClient(folder_session + phone_number, api_id, api_hash, proxy=proxy)
-client.start(password=password, phone=phone_number)
+client = TelegramClient(folder_session + phone_number, api_id, api_hash, use_ipv6=True, proxy=proxy,
+                        system_version="4.16.30-vxDen")
+# client.start(password=password, phone=phone_number)
+client.start(phone=phone_number)
+# print(client(GetStateRequest()))
+# print(client(LogOutRequest()))
 if client.is_user_authorized():
     logging.info('Login success')
 

@@ -15,6 +15,7 @@ class AllSettings:
     source_group = os.getenv('SOURCE_GROUP').split(', ')
     target_group = os.getenv('TARGET_GROUP')
     gasket_group = os.getenv('GASKET_GROUP')
+    admin_target_group_id = int(os.getenv('ADMIN_TARGET_GROUP_ID'))
     password = os.getenv('ACC_PASSWORD')
     proxy = {
         'proxy_type': os.getenv('PROXY_TYPE'),
