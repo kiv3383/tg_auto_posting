@@ -1,5 +1,7 @@
 import logging
 # import os
+import os.path
+
 from telethon import TelegramClient
 
 from config_data.config import AllSettings
@@ -14,6 +16,8 @@ logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %
 logging.basicConfig(level=logging.WARNING)
 
 folder_session = 'session/'
+if not os.path.exists(folder_session):
+    os.mkdir(folder_session)
 
 api_id = all_settings.api_id
 api_hash = all_settings.api_hash
