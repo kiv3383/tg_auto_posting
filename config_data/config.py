@@ -13,7 +13,7 @@ class AllSettings:
     api_hash = os.getenv('API_HASH')
     phone_number = os.getenv('PHONE_NUMBER')
     source_group = os.getenv('SOURCE_GROUP').split(', ')
-    target_group = os.getenv('TARGET_GROUP')
+    target_group = os.getenv('TARGET_GROUP').split(', ')
     gasket_group = os.getenv('GASKET_GROUP')
     admin_target_group_id = int(os.getenv('ADMIN_TARGET_GROUP_ID'))
     password = os.getenv('ACC_PASSWORD')

@@ -29,6 +29,7 @@ target_group = all_settings.target_group
 admin_target_group_id = all_settings.admin_target_group_id
 proxy = all_settings.proxy
 bot_token = all_settings.bot_token
+print(target_group)
 
 session_name = folder_session + phone_number + '_bot'
 logging.info(session_name)
@@ -66,15 +67,17 @@ async def handler(event):
         message = await event.get_message()
         message_text = message.message
         files = message.media
-        await bot.send_message(target_group, message=message_text, file=files, buttons=Button.clear(), silent=True)
+        for target in target_group:
+            await bot.send_message(target, message=message_text, file=files, buttons=Button.clear(), silent=True)
     else:
         message = await event.get_message()
         messages_id_list = list(map(int, event.data.decode('UTF-8').split()))
         messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
         message_text = ' '.join(map(lambda x: x.message, messages_from_album))
         files = [message.media for message in messages_from_album]
-        await send_album_message_to_target_channel(target_group, text=message_text,
-                                                   file=files, silent=True)
+        for target in target_group:
+            await send_album_message_to_target_channel(target, text=message_text,
+                                                       file=files, silent=True)
     await bot.edit_message(message, buttons=Button.clear(), link_preview=False)
 
 
