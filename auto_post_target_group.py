@@ -29,7 +29,6 @@ target_group = all_settings.target_group
 admin_target_group_id = all_settings.admin_target_group_id
 proxy = all_settings.proxy
 bot_token = all_settings.bot_token
-print(target_group)
 
 session_name = folder_session + phone_number + '_bot'
 logging.info(session_name)
