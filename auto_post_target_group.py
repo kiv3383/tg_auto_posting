@@ -74,9 +74,8 @@ async def handler(event):
         messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
         message_text = ' '.join(map(lambda x: x.message, messages_from_album))
         files = [message.media for message in messages_from_album]
-        for target in target_group:
-            await send_album_message_to_target_channel(target, text=message_text,
-                                                       file=files, silent=True)
+        await send_album_message_to_target_channel(target_group, text=message_text,
+                                                   file=files, silent=True)
     await bot.edit_message(message, buttons=Button.clear(), link_preview=False)
 
 

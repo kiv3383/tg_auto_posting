@@ -52,8 +52,9 @@ async def get_message_for_bot(group, ids):
     return result
 
 
-async def send_album_message_to_target_channel(group, text, file, silent):
-    await client.send_message(group, message=text, file=file, silent=silent)
+async def send_album_message_to_target_channel(group: list, text, file, silent):
+    for target in group:
+        await client.send_message(target, message=text, file=file, silent=silent)
 
 
 if __name__ == "__main__":
