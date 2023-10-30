@@ -13,7 +13,6 @@ all_settings = AllSettings()
 formatter = logging.Formatter()
 logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
-logging.basicConfig(level=logging.WARNING)
 
 # os.system('taskkill /IM telegram.exe /F')
 
@@ -40,17 +39,17 @@ bot = TelegramClient(
 @bot.on(events.NewMessage(chats=gasket_group))
 async def handler(event):
     message = event.message
+    message.post_author = None
     file = message.media
     if message.grouped_id:
         return
-    button = Button.inline("Post it")
+    button = Button.inline("Post it", data=message.id)
     await bot.send_message(admin_target_group_id, message.message, file=file, buttons=button)
 
 
 @bot.on(events.Album(chats=gasket_group))
 async def album_resend_handler(event):
     messages_id_list = ' '.join(map(str, [mes.id for mes in event.messages]))
-    print('1. messages_id_list:', messages_id_list)
     button = Button.inline("Post it", data=messages_id_list)
     files = event.messages
     text_message = event.messages[0].message
@@ -62,21 +61,22 @@ async def album_resend_handler(event):
 async def handler(event):
     """Sends a message to the target channel when the button is pressed.
      Remove the button to prevent resending."""
-    if event.data == b'Post it':
-        message = await event.get_message()
-        message_text = message.message
-        files = message.media
-        for target in target_group:
-            await bot.send_message(target, message=message_text, file=files, buttons=Button.clear(), silent=True)
-    else:
-        message = await event.get_message()
-        messages_id_list = list(map(int, event.data.decode('UTF-8').split()))
-        messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
-        message_text = ' '.join(map(lambda x: x.message, messages_from_album))
-        files = [message.media for message in messages_from_album]
-        await send_album_message_to_target_channel(target_group, text=message_text,
-                                                   file=files, silent=True)
+    message = await event.get_message()
+    messages_id_list = list(map(int, event.data.decode('UTF-8').split()))
+    messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
+    message_text = ' '.join(map(lambda x: x.message, messages_from_album))
+    files = [message.media for message in messages_from_album]
+    if not files[0]:
+        files = None
+    await send_album_message_to_target_channel(target_group, text=message_text,
+                                               file=files, silent=True)
     await bot.edit_message(message, buttons=Button.clear(), link_preview=False)
+
+
+# @bot.on(events.NewMessage(chats=target_group))
+# async def target_message_handler(event):
+#     message = event.message
+#     print('Новое сообщение в target_group: ', message)
 
 
 if __name__ == "main":
