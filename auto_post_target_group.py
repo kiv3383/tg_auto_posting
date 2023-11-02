@@ -1,18 +1,16 @@
-import logging
-
 import os
 
+from loguru import logger
 from telethon.sync import TelegramClient
 from telethon import events, Button
+from telethon.utils import get_input_media
 
 from auto_post_gasket import get_message_for_bot, send_album_message_to_target_channel
 from config_data.config import AllSettings
 
 all_settings = AllSettings()
 
-formatter = logging.Formatter()
-logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
+# logger.add('tg_auto_posting.log', enqueue=True)
 
 # os.system('taskkill /IM telegram.exe /F')
 
@@ -30,33 +28,44 @@ proxy = all_settings.proxy
 bot_token = all_settings.bot_token
 
 session_name = folder_session + phone_number + '_bot'
-logging.info(session_name)
 
 bot = TelegramClient(
     session_name, api_id, api_hash, use_ipv6=True, proxy=proxy, system_version="4.16.30-vxDen")
 
 
+@logger.catch
 @bot.on(events.NewMessage(chats=gasket_group))
 async def handler(event):
     message = event.message
-    message.post_author = None
     file = message.media
     if message.grouped_id:
         return
+
+    # TODO: сделать функцию и заменить в модулях
+    if getattr(file, 'spoiler', None):
+        event.media = get_input_media(event.media)
+        event.media.spoiler = True
+
     button = Button.inline("Post it", data=message.id)
-    await bot.send_message(admin_target_group_id, message.message, file=file, buttons=button)
+    logger.info(f'Новое сообщение в канале-прокладке и в боте: {message}')
+    # await bot.send_message(admin_target_group_id, message.message, file=file, buttons=button)
+    await bot.send_message(admin_target_group_id, message, buttons=button)
 
 
+@logger.catch
 @bot.on(events.Album(chats=gasket_group))
 async def album_resend_handler(event):
-    messages_id_list = ' '.join(map(str, [mes.id for mes in event.messages]))
+    messages = event.messages
+    messages_id_list = ' '.join(map(str, [mes.id for mes in messages]))
     button = Button.inline("Post it", data=messages_id_list)
-    files = event.messages
-    text_message = event.messages[0].message
-    await bot.send_message(admin_target_group_id, text_message, file=files)
+    # files = event.messages
+    text_message = messages[0].message
+    logger.info(f'Новое сообщение-альбом в канале-прокладке и в боте: {messages}')
+    await bot.send_message(admin_target_group_id, text_message, file=messages)
     await bot.send_message(admin_target_group_id, 'Post previous album_message.', buttons=button)
 
 
+# @logger.catch
 @bot.on(events.CallbackQuery)
 async def handler(event):
     """Sends a message to the target channel when the button is pressed.
@@ -64,10 +73,22 @@ async def handler(event):
     message = await event.get_message()
     messages_id_list = list(map(int, event.data.decode('UTF-8').split()))
     messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
+    # print(messages_from_album)
     message_text = ' '.join(map(lambda x: x.message, messages_from_album))
     files = [message.media for message in messages_from_album]
     if not files[0]:
         files = None
+    # TODO: how send photo with spoiler
+    # print(files[0])
+    # print(files[0].spoiler)
+    # message = event.message
+    # file = message.media
+    # if files[0].spoiler:
+    #     files[0].media = get_input_media(messages_from_album[0])
+    #     print(files[0])
+    #     files[0].spoiler = True
+    # print(files)
+    logger.info(f'Сообщение переслано в целевую группу: {messages_from_album}')
     await send_album_message_to_target_channel(target_group, text=message_text,
                                                file=files, silent=True)
     await bot.edit_message(message, buttons=Button.clear(), link_preview=False)

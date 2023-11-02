@@ -1,10 +1,9 @@
-import logging
+from loguru import logger
 
 from auto_post_gasket import client
 from auto_post_target_group import bot, bot_token
 
-logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
-                    level=logging.WARNING)
+logger.add('tg_auto_posting.log')
 
 if __name__ == "__main__":
     client.start()
