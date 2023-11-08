@@ -1,7 +1,7 @@
 import os
 
 from telethon.sync import TelegramClient
-from telethon import events, types
+from telethon import events, types, utils
 from loguru import logger
 from telethon.utils import get_input_media
 
@@ -22,6 +22,7 @@ source_group = all_settings.source_group
 gasket_group = all_settings.gasket_group
 target_group = all_settings.target_group
 proxy = all_settings.proxy
+print(source_group)
 
 session_name = folder_session + phone_number
 
@@ -32,9 +33,13 @@ with client:
     source_group_ids = {}
     for elem in source_group:
         try:
-            source_group_ids[elem] = client.get_peer_id(elem)
+            if elem.isdigit():
+                source_group_ids[elem] = utils.get_peer_id(types.PeerChannel(int(elem)))
+            else:
+                source_group_ids[elem] = client.get_peer_id(elem)
         except ValueError:
             continue
+    logger.info(source_group_ids)
 
 
 @logger.catch
@@ -48,7 +53,6 @@ async def message_handler(event):
     if getattr(event.media, 'spoiler', None):
         event.media = get_input_media(event.media)
         event.media.spoiler = True
-
 
     logger.info(f'Новое сообщение в канале-доноре: {message}')
     await client.send_message(gasket_group, message)
