@@ -22,7 +22,6 @@ source_group = all_settings.source_group
 gasket_group = all_settings.gasket_group
 target_group = all_settings.target_group
 proxy = all_settings.proxy
-print(source_group)
 
 session_name = folder_session + phone_number
 
@@ -39,7 +38,6 @@ with client:
                 source_group_ids[elem] = client.get_peer_id(elem)
         except ValueError:
             continue
-    logger.info(source_group_ids)
 
 
 @logger.catch
