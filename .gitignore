@@ -120,6 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.env_for_server
 .env1
 .env2
 .env
@@ -161,7 +162,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+utils/
 session/
 data/
 *.json
 *.csv
+/.env_for server
+/utils/get_channel_info.py
+/utils/get_my_subscriptions.py
