@@ -2,7 +2,8 @@ import logging
 # import os
 import os.path
 
-from telethon import TelegramClient
+from loguru import logger
+from telethon.sync import TelegramClient
 
 from config_data.config import AllSettings
 
@@ -10,9 +11,9 @@ from config_data.config import AllSettings
 
 all_settings = AllSettings()
 
-formatter = logging.Formatter()
-logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
+# formatter = logging.Formatter()
+# logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+#                     datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
 
 folder_session = 'session/'
 if not os.path.exists(folder_session):
@@ -25,15 +26,15 @@ phone_number = all_settings.phone_number
 proxy = all_settings.proxy
 
 client = TelegramClient(folder_session + phone_number, api_id, api_hash, use_ipv6=True, proxy=proxy,
-                        system_version="4.16.30-vxDen")
+                        system_version="4.16.30-vxDens")
 # client.start(password=password, phone=phone_number)
 client.start(phone=phone_number)
 # print(client(GetStateRequest()))
 # print(client(LogOutRequest()))
 if client.is_user_authorized():
-    logging.info('Login success')
+    logger.info('Login success')
 
 else:
-    logging.info('Login fail')
+    logger.info('Login fail')
 
 client.disconnect()
