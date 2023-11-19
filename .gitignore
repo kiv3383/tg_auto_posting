@@ -120,13 +120,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-<<<<<<< HEAD
-.env_for server
-.env_for_test
-=======
 .env_for_test
 .env_for server
->>>>>>> add_signature
 .env1
 .env2
 .env
