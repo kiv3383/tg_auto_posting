@@ -1,4 +1,5 @@
 import os
+import re
 
 from loguru import logger
 from telethon.sync import TelegramClient
@@ -10,7 +11,7 @@ from config_data.config import AllSettings
 
 all_settings = AllSettings()
 
-# logger.add('tg_auto_posting.log', enqueue=True)
+logger.add('tg_auto_posting.log', enqueue=True)
 
 # os.system('taskkill /IM telegram.exe /F')
 
@@ -65,19 +66,24 @@ async def album_resend_handler(event):
     await bot.send_message(admin_target_group_id, 'Post previous album_message.', buttons=button)
 
 
-# @logger.catch
 @bot.on(events.CallbackQuery)
+@logger.catch
 async def handler(event):
     """Sends a message to the target channel when the button is pressed.
      Remove the button to prevent resending."""
     message = await event.get_message()
     messages_id_list = list(map(int, event.data.decode('UTF-8').split()))
     messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
-    # print(messages_from_album)
-    message_text = ' '.join(map(lambda x: x.message, messages_from_album))
+    # text = ' '.join(map(lambda x: x.message, messages_from_album))
+    text = messages_from_album[0].message
+    if '\n' in text:
+        message_text = re.sub(r'^.*\n', '', text)
+    else:
+        message_text = re.sub(r'^.*', '', text)
     files = [message.media for message in messages_from_album]
-    if not files[0]:
+    if None in files:
         files = None
+
     # TODO: how send photo with spoiler
     # print(files[0])
     # print(files[0].spoiler)
@@ -88,9 +94,9 @@ async def handler(event):
     #     print(files[0])
     #     files[0].spoiler = True
     # print(files)
-    logger.info(f'Сообщение переслано в целевую группу: {messages_from_album}')
     await send_album_message_to_target_channel(target_group, text=message_text,
                                                file=files, silent=True)
+    logger.info(f'Сообщение переслано в целевую группу: {messages_from_album}')
     await bot.edit_message(message, buttons=Button.clear(), link_preview=False)
 
 
