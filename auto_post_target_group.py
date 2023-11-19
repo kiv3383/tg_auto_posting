@@ -75,7 +75,9 @@ async def handler(event):
     messages_id_list = list(map(int, event.data.decode('UTF-8').split()))
     messages_from_album = await get_message_for_bot(gasket_group, ids=messages_id_list)
     # text = ' '.join(map(lambda x: x.message, messages_from_album))
-    text = messages_from_album[0].message
+    target_group_link = target_group[0]
+    inviting_text = f'<a href={target_group_link}>\n\nПодписывайтесь на канал!</a>'
+    text = messages_from_album[0].message + inviting_text
     if '\n' in text:
         message_text = re.sub(r'^.*\n', '', text)
     else:
@@ -95,7 +97,7 @@ async def handler(event):
     #     files[0].spoiler = True
     # print(files)
     await send_album_message_to_target_channel(target_group, text=message_text,
-                                               file=files, silent=True)
+                                               file=files, silent=True, parse_mode='html')
     logger.info(f'Сообщение переслано в целевую группу: {messages_from_album}')
     await bot.edit_message(message, buttons=Button.clear(), link_preview=False)
 
